@@ -37,7 +37,7 @@
 | 支持的科研场景 | ≥ 3 类（数据处理/文献综述/论文写作） |
 | 预设工作流 | ≥ 3 个 |
 | 科研专用 Agent | 7 个 |
-| 科研方法论 Skills | 3 个 |
+| 科研方法论 Skills | 18 个（nature-* 8个 + paperspine-* 10个） |
 | 平台兼容 | macOS / Windows / Linux |
 
 ---
@@ -106,10 +106,12 @@ bci-research-toolkit/
 │   ├── literature-review.yaml         # 文献综述
 │   └── paper-discussion.yaml          # 论文讨论部分撰写
 │
-├── skills/                            # 科研方法论
-│   ├── paper-writing/SKILL.md         # 论文写作（基于 nature-writing）
-│   ├── paper-polish/SKILL.md          # 论文润色（基于 nature-polishing）
-│   └── literature-search/SKILL.md     # 文献搜索（基于 nature-academic-search）
+├── skills/                            # 科研方法论（18 个）
+│   ├── 写作/润色/翻译：paper-writing, paper-polish, paper-humanize, paper-translate, paper-rewrite
+│   ├── 文献/引用：literature-search, nature-citation, paper-citation
+│   ├── 数据/图表：nature-data, nature-figure, nature-reader
+│   ├── 审稿/发表：nature-response, paper-research, paper-latex, paper-audit, paper-build
+│   └── 工具：paper-intake, paper-update
 │
 ├── prompts/                           # 提示词库（待扩展）
 │   ├── literature-search.md
@@ -143,13 +145,35 @@ bci-research-toolkit/
 | **图表设计师** | 科学可视化专家 | ERP/时频/地形/源定位图，matplotlib+MNE 代码 |
 | **代码审查员** | Python 科学代码审查 | 正确性/性能/可复现性审查，MNE-Python 最佳实践 |
 
-### 3.2 科研方法论 Skills（3 个）
+### 3.2 科研方法论 Skills（18 个）
+
+#### Nature 系列（8 个）
 
 | Skill | 来源 | 核心内容 |
 |-------|------|---------|
-| **论文写作** | nature-writing | IMRaD 结构、各章节模板、神经科学写作惯例、长度分配 |
-| **论文润色** | nature-polishing | 三层次润色（语法→表达→惯例）、期刊风格适配、中英术语对照 |
-| **文献搜索** | nature-academic-search | PICO 框架、多数据库策略、BCI 专题关键词模板、文献质量评估 |
+| **论文写作** | nature-writing | IMRaD 结构、各章节模板、神经科学写作惯例 |
+| **论文润色** | nature-polishing | 三层次润色（语法→表达→惯例）、期刊风格适配 |
+| **文献搜索** | nature-academic-search | PICO 框架、多数据库策略、BCI 专题关键词 |
+| **引用管理** | nature-citation | BCI 核心文献速查、引用完整性验证 |
+| **数据方法** | nature-data | 数据特征诊断、方法选型决策树、参数速查 |
+| **图表生成** | nature-figure | 期刊标准图表、MNE 可视化模板 |
+| **论文精读** | nature-reader | 中英双语对照、图表感知、批判性阅读 |
+| **审稿回复** | nature-response | 逐条回复审稿意见、Cover Letter |
+
+#### PaperSpine 系列（10 个）
+
+| Skill | 来源 | 核心内容 |
+|-------|------|---------|
+| **人性化改写** | paper-spine-humanize | 四层级降低 AIGC 检测率 |
+| **中英互译** | paper-spine-translate | 逐行对照翻译、术语一致性 |
+| **引用银行** | paper-spine-citation | 主张-引证匹配、分级证据质量 |
+| **论文重写** | paper-spine-rewrite | 从材料重建结构、不依赖原稿 |
+| **期刊调研** | paper-spine-research | 目标期刊分析、格式要求提取 |
+| **论文组装** | paper-spine-build | 从零散材料组装 IMRaD 手稿 |
+| **LaTeX排版** | paper-spine-latex | 项目骨架、图表管理、编译修复 |
+| **输出审计** | paper-spine-audit | 完整性/一致性/BCI特定检查 |
+| **工作流配置** | paper-spine-intake | 交互式收集配置、生成工作流方案 |
+| **工具包更新** | paper-spine-update | 版本检查、依赖更新 |
 
 ### 3.3 预设工作流（3 个）
 
@@ -199,7 +223,7 @@ bci-research-toolkit/
 - [x] 仓库骨架搭建（目录结构 + setup.sh + .env.example + README）
 - [x] 7 个科研 Agent 定义文件
 - [x] 3 个核心工作流 YAML
-- [x] 3 个科研 Skills（基于 nature-* 方法论）
+- [x] 18 个科研 Skills（nature-* 8个 + paperspine-* 10个）
 - [x] GitHub 仓库创建并推送
 
 ### 4.2 近期计划（v0.2）

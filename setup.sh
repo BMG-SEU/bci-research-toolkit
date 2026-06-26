@@ -21,21 +21,33 @@ echo -e "${GREEN}✅${NC} Node.js $(node -v)"
 
 # 2. 安装 agency-orchestrator
 echo ""
-echo "📦 安装多Agent编排引擎..."
-npm install -g agency-orchestrator 2>&1 | tail -1
-echo -e "${GREEN}✅${NC} agency-orchestrator 已安装"
+if command -v ao &> /dev/null; then
+    echo -e "${GREEN}✅${NC} agency-orchestrator 已安装 ($(ao --version 2>&1 | head -1))"
+else
+    echo "📦 安装多Agent编排引擎..."
+    npm install -g agency-orchestrator 2>&1 | tail -1
+    echo -e "${GREEN}✅${NC} agency-orchestrator 已安装"
+fi
 
 # 3. 安装 Claude Code
 echo ""
-echo "📦 安装 Claude Code..."
-npm install -g @anthropic-ai/claude-code 2>&1 | tail -1
-echo -e "${GREEN}✅${NC} Claude Code 已安装"
+if command -v claude &> /dev/null; then
+    echo -e "${GREEN}✅${NC} Claude Code 已安装 ($(claude --version 2>&1 | head -1))"
+else
+    echo "📦 安装 Claude Code..."
+    npm install -g @anthropic-ai/claude-code 2>&1 | tail -1
+    echo -e "${GREEN}✅${NC} Claude Code 已安装"
+fi
 
 # 4. 安装 superpowers-zh skills
 echo ""
-echo "📦 安装 superpowers-zh（AI编程方法论）..."
-npx superpowers-zh 2>&1 | tail -5
-echo -e "${GREEN}✅${NC} superpowers-zh 已安装"
+if [ -d ".claude/skills" ] && [ "$(ls -A .claude/skills 2>/dev/null)" ]; then
+    echo -e "${GREEN}✅${NC} superpowers-zh 已安装"
+else
+    echo "📦 安装 superpowers-zh（AI编程方法论）..."
+    npx superpowers-zh 2>&1 | tail -5
+    echo -e "${GREEN}✅${NC} superpowers-zh 已安装"
+fi
 
 # 5. 配置 .env
 if [ ! -f .env ]; then

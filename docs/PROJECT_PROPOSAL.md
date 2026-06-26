@@ -220,11 +220,16 @@ bci-research-toolkit/
 
 ### 4.1 已完成（v0.1）
 
-- [x] 仓库骨架搭建（目录结构 + setup.sh + .env.example + README）
+- [x] 仓库骨架搭建（目录结构 + setup.sh/bat + .env.example + README）
 - [x] 7 个科研 Agent 定义文件
 - [x] 3 个核心工作流 YAML
 - [x] 18 个科研 Skills（nature-* 8个 + paperspine-* 10个）
 - [x] GitHub 仓库创建并推送
+- [x] 完整项目任务书（docs/PROJECT_PROPOSAL.md）
+- [x] 完整用户使用指南（docs/tutorial.md）
+- [x] Web 图形界面（ao web）
+- [x] setup.sh/bat 智能检测（已有跳过，无则自动装）
+- [x] Claude Code 接入 DeepSeek 后端（零额外费用）
 
 ### 4.2 近期计划（v0.2）
 

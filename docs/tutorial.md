@@ -13,7 +13,9 @@ bash setup.sh        # macOS/Linux
 # setup.bat          # Windows（双击）
 
 # 编辑 .env 填入 DeepSeek API key
-# DEEPSEEK_API_KEY=sk-xxx
+# 打开 https://platform.deepseek.com/api_keys → 注册（1分钟）→ 创建 key → 复制
+# 然后把 .env 里的 sk-your-deepseek-key-here 替换成你的真实 key
+# DEEPSEEK_API_KEY=sk-abc123...
 
 # 启动图形界面
 ao web

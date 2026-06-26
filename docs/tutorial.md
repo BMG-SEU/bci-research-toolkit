@@ -1,35 +1,39 @@
 # BCI Research Toolkit — 用户使用指南
 
-> 从零到熟练，覆盖课题组全部日常科研场景
+> 从零到熟练，覆盖课题组全部日常科研场景。**推荐使用图形界面（`ao web`）上手。**
 
 ---
 
-## 〇、第一次使用（5 分钟）
+## 〇、第一次使用（3 分钟）
 
 ```bash
-# 1. 克隆仓库
 git clone git@github.com:BMG-SEU/bci-research-toolkit.git
 cd bci-research-toolkit
-
-# 2. 一键部署
 bash setup.sh        # macOS/Linux
 # setup.bat          # Windows（双击）
 
-# 3. 编辑 .env 填入 DeepSeek API key
+# 编辑 .env 填入 DeepSeek API key
 # DEEPSEEK_API_KEY=sk-xxx
-# 如果想让 Claude Code 也用 DeepSeek，额外取消注释：
-# ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
-# ANTHROPIC_API_KEY=sk-xxx
 
-# 4. 验证安装
-ao demo
+# 启动图形界面
+ao web
 ```
+
+浏览器自动打开 → 选工作流模板 → 填参数 → 点击运行。不用打命令。
 
 ---
 
-## 一、三种使用模式
+## 一、三种使用模式（推荐第一种）
 
-### 模式 1：自然语言——想到啥说啥（最常用）
+### 🖥️ 图形界面 —— 打开浏览器就能用（最推荐）
+
+```bash
+ao web
+```
+
+浏览器自动打开，中文界面。下拉选工作流模板 → 填参数 → 点运行。适合不习惯命令行的同学。
+
+### ⌨️ 自然语言 —— 想到啥说啥
 
 ```bash
 ao compose "你的需求" --run

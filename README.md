@@ -20,8 +20,12 @@ bash setup.sh        # macOS / Linux
 # 3. 编辑 .env 填入 DeepSeek API key
 # （充 10 块钱能用很久，¥2/1M tokens）
 
-# 4. 开始使用
-ao compose "帮我分析 MEG 数据的时频特征" --run
+# 4. 启动（图形界面，推荐）
+ao web
+# 浏览器自动打开，选模板 → 填参数 → 点击运行
+
+# 或者命令行模式
+ao compose "帮我分析 MEG 时频特征" --run
 ```
 
 > 需要 DeepSeek API key：https://platform.deepseek.com/api_keys

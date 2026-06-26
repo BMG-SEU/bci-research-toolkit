@@ -1,0 +1,111 @@
+# 论文讨论部分撰写工作流
+# 用法: ao run workflows/paper-discussion.yaml -i results_summary=@results.md -i hypothesis="..." -i limitations="..."
+
+name: "论文讨论部分撰写"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 2
+inputs:
+  - name: results_summary
+    required: true
+    description: "结果摘要（markdown 文件路径，用 @文件路径 传入）"
+  - name: hypothesis
+    required: true
+    description: "原始研究假设（一句话）"
+  - name: limitations
+    required: true
+    description: "已知的方法学局限性（用分号分隔多条）"
+  - name: target_journal
+    required: false
+    default: "NeuroImage"
+    description: "目标期刊（影响写作风格）"
+
+steps:
+  - id: interpret
+    role: "neuroscience-paper-writer"
+    task: |
+      基于结果摘要，解释研究发现：
+
+      结果摘要：{{results_summary}}
+
+      原始假设：{{hypothesis}}
+
+      逐条分析每个主要发现：
+      1. 是否支持假设？为什么？
+      2. 与已有文献的异同（请标注文献来源）
+      3. 可能的神经生理机制解释
+      4. 每个发现的可靠性评估（效应量、样本量考量）
+
+      目标期刊：{{target_journal}}
+    output: interpretation
+
+  - id: compare_literature
+    role: "bci-literature-reviewer"
+    task: |
+      将以下发现与文献对比：
+
+      {{interpretation}}
+
+      对每个主要发现：
+      1. 找出 3-5 篇最相关的文献
+      2. 对比方法和结果
+      3. 指出本研究的增量贡献（novelty）
+      4. 如果有矛盾结果，分析可能的原因
+
+      如果对比中发现研究假设有文献支持/不支持的模式，重点讨论。
+    output: lit_comparison
+    depends_on: [interpret]
+
+  - id: discuss_limitations
+    role: "stats-methodologist"
+    task: |
+      逐一分析以下局限性：
+
+      {{limitations}}
+
+      对每条局限性：
+      1. 对结论的潜在影响程度（高/中/低）
+      2. 为什么存在这个局限性（实验设计中的合理取舍）
+      3. 未来如何避免或改进
+      4. 该局限性在该领域其他研究中的普遍程度
+    output: limitation_discussion
+    depends_on: [interpret]
+
+  - id: write_discussion
+    role: "neuroscience-paper-writer"
+    task: |
+      综合所有分析，撰写完整的 Discussion 章节：
+
+      ## 输入材料
+
+      ### 结果解释
+      {{interpretation}}
+
+      ### 文献对比
+      {{lit_comparison}}
+
+      ### 局限性讨论
+      {{limitation_discussion}}
+
+      ## 写作要求
+
+      结构（Nature-style Discussion）：
+      1. **开头段**：重述主要发现，3-5 句，直接有力
+      2. **主体段**：逐条讨论，每段一个发现 + 文献对比 + 解释
+      3. **局限性段**：诚实但有分寸，不自我贬低
+      4. **结论段**：总结贡献 + 未来方向，2-3 句
+
+      风格要求：
+      - 目标期刊：{{target_journal}}
+      - 使用主动语态
+      - 避免过度推测，主张强度与证据匹配
+      - 引用编号格式 [1], [2]...
+
+      输出 Markdown 格式。
+    output_file: "discussion_draft.md"
+    depends_on: [compare_literature, discuss_limitations]

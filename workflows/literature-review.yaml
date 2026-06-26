@@ -1,0 +1,111 @@
+# 文献综述工作流
+# 用法: ao run workflows/literature-review.yaml -i topic="motor imagery BCI deep learning"
+
+name: "BCI 文献综述"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 2
+inputs:
+  - name: topic
+    required: true
+    description: "研究主题，如 motor imagery BCI deep learning"
+  - name: year_start
+    required: false
+    default: "2020"
+  - name: year_end
+    required: false
+    default: "2025"
+  - name: max_papers
+    required: false
+    default: "50"
+
+steps:
+  - id: search_strategy
+    role: "bci-literature-reviewer"
+    task: |
+      为「{{topic}}」设计系统化文献检索策略：
+
+      1. **PICO 框架分析**：人群、干预、比较、结果
+      2. **关键词组合**：中英文 3-5 组，含布尔运算符
+      3. **数据库优先级**：PubMed > IEEE Xplore > Scopus
+      4. **纳入标准**：发表年份 {{year_start}}-{{year_end}}，同行评审，英文
+      5. **排除标准**：会议摘要、非英语、重复发表
+
+      输出完整的检索策略文档。
+    output: search_plan
+
+  - id: classify
+    role: "bci-literature-reviewer"
+    task: |
+      为「{{topic}}」设计文献分类框架：
+      1. 按**方法学**分类（传统 ML、深度学习、迁移学习、黎曼几何等）
+      2. 按**应用子领域**分类（运动想象、SSVEP、P300 等）
+      3. 按**信号类型**分类（EEG、MEG、ECoG）
+      4. 按**年份**标注研究趋势
+      5. 识别该领域的**核心论文**（高引用）和**最新突破**（近 2 年）
+
+      检索策略参考：{{search_plan}}
+    output: classification
+    depends_on: [search_strategy]
+
+  - id: methodology_review
+    role: "stats-methodologist"
+    task: |
+      回顾「{{topic}}」领域常用的：
+      1. 数据预处理方法
+      2. 特征提取技术
+      3. 分类/回归模型
+      4. 统计检验方法（及多重比较校正）
+      5. 实验设计常见模式
+      6. 方法学争议和陷阱
+
+      基于分类框架：{{classification}}
+    output: methodology
+    depends_on: [classify]
+
+  - id: future_directions
+    role: "bci-literature-reviewer"
+    task: |
+      基于已有分析，提出「{{topic}}」领域：
+      1. 未解决的关键问题（3-5 个）
+      2. 未来研究方向（含具体建议）
+      3. 潜在突破点（新方法/新范式/跨领域融合）
+
+      综合参考：
+      {{classification}}
+      {{methodology}}
+    output: future_work
+    depends_on: [methodology_review]
+
+  - id: write_review
+    role: "neuroscience-paper-writer"
+    task: |
+      综合所有分析撰写文献综述初稿：
+
+      ## 检索策略
+      {{search_plan}}
+
+      ## 分类框架
+      {{classification}}
+
+      ## 方法学回顾
+      {{methodology}}
+
+      ## 未来方向
+      {{future_work}}
+
+      要求：
+      - 结构化的学术综述（Introduction + Methods + Results + Discussion 格式）
+      - 引用编号格式 [1], [2]...
+      - 结尾附参考文献列表（按出现顺序，APA 格式）
+      - 篇幅约 3000-4000 字
+      - 适合作为论文 Introduction 或独立综述的基础
+
+      输出为 Markdown 格式。
+    output_file: "literature_review_{{topic}}.md"
+    depends_on: [future_directions]

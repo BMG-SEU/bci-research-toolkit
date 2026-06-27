@@ -231,16 +231,15 @@ bci-research-toolkit/
 - [x] setup.sh/bat 智能检测（已有跳过，无则自动装）
 - [x] Claude Code 接入 DeepSeek 后端（零额外费用）
 
-### 4.2 近期计划（v0.2）
+### 4.2 近期计划（v0.2）— 进行中
 
-- [ ] 工作流 4：eeg-analysis.yaml（EEG 分析流水线）
-- [ ] 工作流 5：paper-methods.yaml（论文方法学撰写）
-- [ ] 工作流 6：paper-results.yaml（论文结果部分撰写）
+- [x] 工作流 5：paper-methods.yaml（论文方法学撰写，用 paper-writing + paper-build）
+- [x] 工作流 6：paper-results.yaml（论文结果撰写，用 nature-figure + paper-writing + paper-build）
+- [x] 提示词库：导入 academic-ai-prompt-main（89+ 提示词）
+- [ ] 工作流 7：eeg-analysis.yaml（EEG 分析流水线）
 - [ ] Skill 4：eeg-artifact-removal（EEG 去伪影方法论）
 - [ ] Skill 5：time-frequency-analysis（时频分析方法论）
 - [ ] Skill 6：statistical-analysis（统计检验方法论）
-- [ ] 提示词库：4 个高品质提示词
-- [ ] 使用教程：docs/tutorial.md
 - [ ] FAQ：docs/faq.md
 
 ### 4.3 中期计划（v0.3）

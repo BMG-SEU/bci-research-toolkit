@@ -1,0 +1,131 @@
+# 论文结果部分撰写工作流
+# 用法: ao run workflows/paper-results.yaml -i behavioral="反应时缩短15%，准确率提升12%" -i neural="alpha ERD增强，C3电极差异显著" -i comparison="与EEGNet对比：准确率+8%，ITR+5" -i figures="Figure1: ERP波形图; Figure2: 地形图; Figure3: 混淆矩阵"
+
+name: "论文结果部分撰写"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 1
+inputs:
+  - name: behavioral
+    required: false
+    description: "行为数据结果（如反应时、准确率等）"
+  - name: neural
+    required: true
+    description: "神经信号结果（ERP/ERD/时频/连接等主要发现）"
+  - name: comparison
+    required: false
+    description: "与基线方法的对比结果"
+  - name: figures
+    required: false
+    description: "图表清单（Figure1: 说明; Figure2: 说明...）"
+  - name: target_journal
+    required: false
+    default: "NeuroImage"
+
+steps:
+  - id: behavioral_section
+    role: "neuroscience-paper-writer"
+    skill: "paper-writing"
+    task: |
+      撰写 Behavioral Results 小节：
+      
+      行为数据：{{behavioral}}
+      
+      要求：
+      - 如果输入为空则跳过本节
+      - 按任务结构组织（condition A vs B）
+      - 报告描述性统计（Mean ± SD/SE）
+      - 报告推断统计（test statistic + p值 + 效应量）
+      - 不讨论含义，只报告发现
+      
+      目标期刊：{{target_journal}}
+    output: section_behavioral
+
+  - id: neural_section
+    role: "neuroscience-paper-writer"
+    skill: "paper-writing"
+    task: |
+      撰写 Neural Results 小节：
+      
+      神经信号结果：{{neural}}
+      
+      要求：
+      - 按信号域组织（时域 → 时频域 → 空间）
+      - 如果有时域结果：报告成分潜伏期和幅值
+      - 如果有时频结果：报告频率范围、时间窗、效应方向
+      - 如果有空间结果：报告电极/脑区、效应方向
+      - 每个发现报告统计值（test + p + 效应量）
+      - 交叉引用图表编号（如 "see Figure 1"）
+      - 不讨论含义
+      
+      目标期刊：{{target_journal}}
+    output: section_neural
+    depends_on: [behavioral_section]
+
+  - id: comparison_section
+    role: "meg-analyst"
+    task: |
+      撰写 Comparison with Baseline Methods 小节：
+      
+      对比结果：{{comparison}}
+      
+      要求：
+      - 如果输入为空则跳过本节
+      - 逐一与每个基线方法对比
+      - 报告性能指标差异
+      - 注明统计显著性
+      
+      确保数据与验证集一致。
+    output: section_comparison
+    depends_on: [neural_section]
+
+  - id: figure_descriptions
+    role: "figure-designer"
+    skill: "nature-figure"
+    task: |
+      根据图表清单撰写 Figure 说明：
+      
+      图表清单：{{figures}}
+      
+      要求：
+      - 如果输入为空则跳过本节
+      - 每个 Figure 配简短说明（可嵌入 Results 中用 "Figure X shows..." 句式）
+      - 说明要能独立理解（不依赖正文）
+      
+      参考 nature-figure 的图表质量标准。
+    output: section_figures
+    depends_on: [neural_section, comparison_section]
+
+  - id: assemble_results
+    role: "neuroscience-paper-writer"
+    skill: "paper-build"
+    task: |
+      综合所有小节，组装完整的 Results 章节：
+      
+      ## Behavioral Results
+      {{section_behavioral}}
+      
+      ## Neural Results
+      {{section_neural}}
+      
+      ## Comparison
+      {{section_comparison}}
+      
+      ## Figure Descriptions
+      {{section_figures}}
+      
+      要求：
+      - 按逻辑流组织（行为→神经→对比）
+      - 统一数据精度（p值保留3位小数，%保留1位）
+      - 交叉引用所有图表
+      - 不讨论含义，严格只报告发现
+      - 目标期刊：{{target_journal}}
+      
+      输出完整的 Results 章节（Markdown）。
+    output_file: "results_draft.md"
+    depends_on: [behavioral_section, neural_section, comparison_section, figure_descriptions]

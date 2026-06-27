@@ -8,14 +8,21 @@
 
 ## 🚀 5 分钟上手
 
+### 方式一：传统安装
 ```bash
-# 1. 克隆
-git clone <本仓库地址>
+git clone git@github.com:BMG-SEU/bci-research-toolkit.git
 cd bci-research-toolkit
+bash setup.sh    # 一键部署
+```
 
-# 2. 一键部署
-bash setup.sh        # macOS / Linux
-# 或双击 setup.bat   # Windows
+### 方式二：Docker（零环境依赖）
+```bash
+git clone git@github.com:BMG-SEU/bci-research-toolkit.git
+cd bci-research-toolkit
+# 编辑 .env 填入 DEEPSEEK_API_KEY
+docker compose up -d       # 一键启动
+# 浏览器打开 http://localhost:3000
+```
 
 # 3. 编辑 .env 填入 DeepSeek API key
 # （充 10 块钱能用很久，¥2/1M tokens）

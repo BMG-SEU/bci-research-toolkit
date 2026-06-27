@@ -1,0 +1,88 @@
+# 功能连接分析工作流
+# 用法: ao run workflows/connectivity-analysis.yaml -i file_path=@data.fif -i method="PLV" -i bands="alpha"
+
+name: "功能连接分析"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 1
+inputs:
+  - name: file_path
+    required: true
+    description: "MEG/EEG 数据文件路径"
+  - name: method
+    required: false
+    default: "PLV"
+    description: "连接指标: PLV / PLI / wPLI / coherence / imaginary coherency"
+  - name: bands
+    required: false
+    default: "alpha(8-13Hz)"
+    description: "目标频段"
+  - name: roi
+    required: false
+    description: "感兴趣区（如 'motor cortex'），不填则全脑"
+
+steps:
+  - id: method_selection
+    role: "meg-analyst"
+    task: |
+      为连接分析推荐最合适的方法：
+
+      数据：{{file_path}}
+      指定方法：{{method}}
+      频段：{{bands}}
+
+      1. 比较候选方法（PLV/PLI/wPLI/coherence/imag coherency）
+      2. 解释每种方法的优缺点
+      3. 针对数据特征给出推荐
+      
+      特别注意：
+      - PLV 对体积传导敏感
+      - PLI/wPLI 对体积传导不敏感
+      - 相干性受参考电极影响
+    output: method_recommendation
+
+  - id: connectivity_plan
+    role: "meg-analyst"
+    task: |
+      根据推荐方法设计连接分析方案：
+
+      {{method_recommendation}}
+
+      1. 预处理要求（分段数、长度）
+      2. 源空间还是传感器空间
+      3. 连接矩阵计算参数
+      4. 图论指标（可选：degree/clustering/path length）
+      5. 统计检验方法
+    output: conn_plan
+    depends_on: [method_selection]
+
+  - id: code_generation
+    role: "code-reviewer-python"
+    task: |
+      生成 MNE-Python 功能连接分析代码：
+
+      {{conn_plan}}
+
+      要求：
+      - 使用 mne_connectivity 库
+      - ROIs：{{roi}}
+      - 包含连接矩阵可视化和网络图
+    output_file: "connectivity_{{method}}_{{bands}}.py"
+    depends_on: [connectivity_plan]
+
+  - id: summary
+    role: "meg-analyst"
+    task: |
+      汇总功能连接分析方案：
+
+      ## 方法推荐
+      {{method_recommendation}}
+
+      ## 连接分析方案
+      {{conn_plan}}
+    depends_on: [method_selection, connectivity_plan, code_generation]

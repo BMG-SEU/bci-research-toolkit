@@ -1,0 +1,84 @@
+# 源定位分析工作流
+# 用法: ao run workflows/source-localization.yaml -i file_path=@data.fif -i method="dSPM"
+
+name: "源定位分析"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 1
+inputs:
+  - name: file_path
+    required: true
+    description: "MEG/EEG .fif 文件路径"
+  - name: method
+    required: false
+    default: "dSPM"
+    description: "逆解方法: dSPM / sLORETA / beamformer"
+  - name: has_mri
+    required: false
+    default: "fsaverage"
+    description: "MRI 来源: fsaverage / 自有的 / 无"
+
+steps:
+  - id: data_assessment
+    role: "meg-analyst"
+    task: |
+      评估数据是否适合源定位分析：
+      文件：{{file_path}}
+      
+      1. 检查是否有足够通道数（≥ 64 EEG 或 MEG 全头）
+      2. 检查是否有空房数据（噪声协方差）
+      3. 确认数据质量（信噪比）
+      4. MRI 可用性：{{has_mri}}
+    output: assessment
+
+  - id: localization_plan
+    role: "meg-analyst"
+    skill: "source-localization"
+    task: |
+      根据评估结果设计源定位方案：
+
+      {{assessment}}
+
+      指定方法：{{method}}
+
+      1. 头模型选择（BEM / 球形）
+      2. 源空间参数（ico-4 / ico-5 / volume）
+      3. 逆解方法和正则化参数
+      4. 统计检验方法
+      5. 可视化方案
+    output: loc_plan
+    depends_on: [data_assessment]
+
+  - id: code_generation
+    role: "code-reviewer-python"
+    task: |
+      根据源定位方案生成 MNE-Python 代码：
+
+      {{loc_plan}}
+
+      要求：
+      - 完整可执行
+      - 包含正向解 → 逆解 → 统计 → 可视化
+      - 使用 fsaverage 模板（如无自有 MRI）
+      - 自动下载所需数据（fsaverage、BEM 模型）
+    output_file: "source_localization_{{method}}.py"
+    depends_on: [localization_plan]
+
+  - id: summary
+    role: "meg-analyst"
+    task: |
+      汇总源定位分析方案：
+
+      ## 数据评估
+      {{assessment}}
+
+      ## 源定位方案
+      {{loc_plan}}
+
+      代码已生成：source_localization_{{method}}.py
+    depends_on: [data_assessment, localization_plan, code_generation]

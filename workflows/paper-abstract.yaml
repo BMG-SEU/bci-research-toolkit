@@ -1,0 +1,98 @@
+# 论文摘要写作工作流
+# 用法: ao run workflows/paper-abstract.yaml -i background="运动想象BCI面临泛化性挑战" -i method="提出基于迁移学习的CSP-LDA框架" -i results="准确率85%,ITR提升40%" -i conclusion="迁移学习有效减少校准时间"
+
+name: "论文摘要写作"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 120000
+
+concurrency: 1
+inputs:
+  - name: background
+    required: true
+    description: "研究背景（1-2句，概括已知与未知）"
+  - name: method
+    required: true
+    description: "方法（用什么做了什么）"
+  - name: results
+    required: true
+    description: "主要结果（含关键数字）"
+  - name: conclusion
+    required: true
+    description: "结论与意义（1-2句）"
+  - name: word_limit
+    required: false
+    default: "250"
+    description: "字数限制"
+  - name: keywords
+    required: false
+    default: "BCI; EEG; motor imagery"
+    description: "关键词（分号分隔）"
+  - name: target_journal
+    required: false
+    default: "NeuroImage"
+
+steps:
+  - id: draft_abstract
+    role: "neuroscience-paper-writer"
+    skill: "paper-writing"
+    task: |
+      根据以下信息撰写论文摘要：
+
+      背景：{{background}}
+      方法：{{method}}
+      结果：{{results}}
+      结论：{{conclusion}}
+
+      要求：
+      - 字数：≤ {{word_limit}} 字
+      - 结构：Background(1句) → Objective(1句) → Methods(2-3句) → Results(2-3句) → Conclusion(1句)
+      - Results 部分必须包含具体数字
+      - 避免笼统表述（"improved" → "improved by 40%"）
+      - 目标期刊：{{target_journal}}
+
+      参考 paper-writing 方法论。
+    output: abstract_draft
+
+  - id: polish_abstract
+    role: "neuroscience-paper-writer"
+    skill: "paper-polish"
+    task: |
+      润色以下摘要：
+
+      {{abstract_draft}}
+
+      要求：
+      - 三层次润色（语法→表达→学术惯例）
+      - 确保每句话都承载关键信息
+      - 去除冗余（"It is worth noting that" 等）
+      - 检查字数 ≤ {{word_limit}}
+      - 目标期刊：{{target_journal}}
+
+      参考 paper-polish 方法论。
+    output: abstract_polished
+    depends_on: [draft_abstract]
+
+  - id: format_output
+    role: "neuroscience-paper-writer"
+    task: |
+      格式化最终摘要：
+
+      {{abstract_polished}}
+
+      输出格式：
+      ```
+      ## Abstract
+
+      [段落]
+
+      ## Keywords
+      [{{keywords}}]
+      ```
+
+      字数统计：[N] words
+    output_file: "abstract.md"
+    depends_on: [polish_abstract]

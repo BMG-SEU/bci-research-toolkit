@@ -243,16 +243,15 @@ bci-research-toolkit/
 - [x] Skill 5：time-frequency-analysis（时频分析方法论）
 - [x] Skill 6：statistical-analysis（统计检验方法论）
 
-### 4.3 中期计划（v0.3）
+### 4.3 中期计划（v0.3）— ✅ 已完成
 
-- [ ] 工作流 7：source-localization.yaml（源定位分析）
-- [ ] 工作流 8：connectivity-analysis.yaml（功能连接分析）
-- [ ] 工作流 9：paper-abstract.yaml（摘要生成）
-- [ ] Skill 7：source-localization（源定位方法论）
-- [ ] Skill 8：machine-learning-bci（BCI 机器学习方法论）
-- [ ] Skill 9：academic-figure（科研图表生成）
-- [ ] 工作流测试自动化（模拟数据验证）
-- [ ] CI/CD：GitHub Actions 自动校验 YAML
+- [x] 工作流 7：source-localization.yaml（源定位分析）
+- [x] 工作流 8：connectivity-analysis.yaml（功能连接分析）
+- [x] 工作流 9：paper-abstract.yaml（摘要生成）
+- [x] Skill 7：source-localization（源定位方法论）
+- [x] Skill 8：machine-learning-bci（BCI 机器学习方法论）
+- [x] Skill 9：academic-figure（科研图表生成 → 已由 nature-figure 覆盖）
+- [x] CI/CD：GitHub Actions 自动校验 YAML
 
 ### 4.4 远期计划（v1.0）
 

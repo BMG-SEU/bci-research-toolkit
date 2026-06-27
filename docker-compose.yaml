@@ -1,0 +1,16 @@
+# 一键启动: docker compose up -d
+# 访问: http://localhost:3000
+
+services:
+  bci-toolkit:
+    build: .
+    image: bci-research-toolkit:latest
+    container_name: bci-toolkit
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./workspace:/workspace
+      - ./.env:/workspace/bci-research-toolkit/.env:ro
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    restart: unless-stopped

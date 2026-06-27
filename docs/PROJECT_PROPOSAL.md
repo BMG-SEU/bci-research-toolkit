@@ -258,7 +258,7 @@ bci-research-toolkit/
 - [x] 支持 MEG/EEG 数据文件实际读取（通过 Claude Code 桥接：AO 规划 + Claude Code 读文件 + 返回分析）
 - [x] Web 界面（`ao web` 图形化操作，AO 自带，已设置为首选启动方式）
 - [x] 工作流市场（community-workflows/ 目录，课题组间通过 PR 分享自定义工作流）
-- [ ] Docker 镜像（一键启动完整环境）
+- [x] Docker 镜像（Dockerfile + docker-compose.yaml，一键启动完整环境）
 - [ ] 支持更多国内 LLM（通义千问、文心一言、百川）
 - [ ] 论文投稿全流程（Cover Letter → Submission → Response to Reviewers）
 

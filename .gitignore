@@ -7,7 +7,8 @@
 ao-output/
 
 # Node
-node_modules/
+# 角色库（ao init 自动下载，不提交）
+agency-agents-zh/
 
 # 系统文件
 .DS_Store

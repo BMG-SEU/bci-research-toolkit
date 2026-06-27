@@ -64,7 +64,7 @@
 
 ---
 
-## 第 3 步：下载工具包（二选一）
+## 第 3 步：下载工具包（三选一）
 
 ### 方式 A：有 GitHub 账号（推荐）
 
@@ -82,6 +82,21 @@ git clone https://github.com/BMG-SEU/bci-research-toolkit.git
 ```
 
 > 如果没有 Git：https://git-scm.com 下载安装，一路下一步。
+
+### 方式 C：Docker（无需装 Node.js，环境隔离）
+
+如果你会 Docker 或者想用服务器部署：
+
+1. 确保电脑已装 Docker Desktop（https://docker.com）
+2. 解压后编辑 `.env` 填入 API key
+3. 打开 cmd/Terminal，进入文件夹
+4. 输入：
+   ```
+   docker compose up -d
+   ```
+5. 浏览器打开 `http://localhost:3000`
+
+> Docker 的好处：不用装 Node.js、环境隔离、可以在服务器上跑。
 
 ---
 

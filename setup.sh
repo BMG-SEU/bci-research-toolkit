@@ -49,6 +49,16 @@ else
     echo -e "${GREEN}✅${NC} superpowers-zh 已安装"
 fi
 
+# 5. 初始化角色库（ao compose 需要）
+echo ""
+if [ -d "agency-agents-zh" ]; then
+    echo -e "${GREEN}✅${NC} 角色库已初始化"
+else
+    echo "📦 初始化角色库（ao compose 需要）..."
+    ao init 2>&1 | tail -3
+    echo -e "${GREEN}✅${NC} 角色库已初始化"
+fi
+
 # 5. 配置 .env
 if [ ! -f .env ]; then
     cp .env.example .env

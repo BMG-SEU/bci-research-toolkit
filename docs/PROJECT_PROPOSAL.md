@@ -255,7 +255,7 @@ bci-research-toolkit/
 
 ### 4.4 远期计划（v1.0）
 
-- [ ] 支持 MEG/EEG 数据文件实际读取（通过 MNE-Python bridge）
+- [x] 支持 MEG/EEG 数据文件实际读取（通过 Claude Code 桥接：AO 规划 + Claude Code 读文件 + 返回分析）
 - [ ] Web 界面（`ao web` 图形化操作）
 - [ ] 工作流市场（课题组间分享自定义工作流）
 - [ ] Docker 镜像（一键启动完整环境）

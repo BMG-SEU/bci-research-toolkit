@@ -250,7 +250,7 @@ bci-research-toolkit/
 - [x] 工作流 9：paper-abstract.yaml（摘要生成）
 - [x] Skill 7：source-localization（源定位方法论）
 - [x] Skill 8：machine-learning-bci（BCI 机器学习方法论）
-- [x] Skill 9：academic-figure（科研图表生成 → 已由 nature-figure 覆盖）
+- [x] Skill 9：nature-figure（科研图表生成，已有）
 - [x] CI/CD：GitHub Actions 自动校验 YAML
 
 ### 4.4 远期计划（v1.0）

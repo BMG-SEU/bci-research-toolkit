@@ -37,7 +37,7 @@
 | 支持的科研场景 | ≥ 3 类（数据处理/文献综述/论文写作） |
 | 预设工作流 | ≥ 3 个 |
 | 科研专用 Agent | 7 个 |
-| 科研方法论 Skills | 18 个（nature-* 8个 + paperspine-* 10个） |
+| 科研方法论 Skills | 21 个（nature-* 8 + paperspine-* 10 + EEG/时频/统计 3） |
 | 平台兼容 | macOS / Windows / Linux |
 
 ---
@@ -231,16 +231,17 @@ bci-research-toolkit/
 - [x] setup.sh/bat 智能检测（已有跳过，无则自动装）
 - [x] Claude Code 接入 DeepSeek 后端（零额外费用）
 
-### 4.2 近期计划（v0.2）— 进行中
+### 4.2 近期计划（v0.2）— ✅ 已完成
 
-- [x] 工作流 5：paper-methods.yaml（论文方法学撰写，用 paper-writing + paper-build）
-- [x] 工作流 6：paper-results.yaml（论文结果撰写，用 nature-figure + paper-writing + paper-build）
+- [x] 工作流 5：paper-methods.yaml（论文方法学撰写）
+- [x] 工作流 6：paper-results.yaml（论文结果撰写）
 - [x] 提示词库：导入 academic-ai-prompt-main（89+ 提示词）
-- [ ] 工作流 7：eeg-analysis.yaml（EEG 分析流水线）
-- [ ] Skill 4：eeg-artifact-removal（EEG 去伪影方法论）
-- [ ] Skill 5：time-frequency-analysis（时频分析方法论）
-- [ ] Skill 6：statistical-analysis（统计检验方法论）
-- [ ] FAQ：docs/faq.md
+- [x] 使用教程：docs/tutorial.md
+- [x] FAQ：docs/faq.md
+- [x] 工作流 4：eeg-analysis.yaml（EEG 分析流水线）
+- [x] Skill 4：eeg-artifact-removal（EEG 去伪影方法论）
+- [x] Skill 5：time-frequency-analysis（时频分析方法论）
+- [x] Skill 6：statistical-analysis（统计检验方法论）
 
 ### 4.3 中期计划（v0.3）
 

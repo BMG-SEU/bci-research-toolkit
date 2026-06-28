@@ -128,6 +128,32 @@ metadata:
 
 ---
 
+## 可执行工具 (Executable Tools)
+
+以下脚本可直接被 Claude Code 调用执行：
+
+| 工具 | 路径 | 功能 |
+|------|------|------|
+| 工作流执行器 | `scripts/run_workflow.sh` | 列出/执行/编排 AO 工作流 |
+| YAML 校验器 | `scripts/validate_all.sh` | 校验全部 11 个工作流 YAML 合法性 |
+
+使用方式（在项目目录下）：
+```bash
+# 列出所有工作流
+bash .claude/skills/bci-research-toolkit/scripts/run_workflow.sh list
+
+# 执行预设工作流
+bash .claude/skills/bci-research-toolkit/scripts/run_workflow.sh run literature-review -i topic="motor imagery BCI"
+
+# 自然语言编排
+bash .claude/skills/bci-research-toolkit/scripts/run_workflow.sh compose "帮我分析MEG时频特征"
+
+# 校验所有 YAML
+bash .claude/skills/bci-research-toolkit/scripts/validate_all.sh
+```
+
+---
+
 ## 完整文档
 
 - 项目介绍：`docs/PROJECT_OVERVIEW.md`

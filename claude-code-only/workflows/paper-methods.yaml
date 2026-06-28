@@ -1,0 +1,174 @@
+# 论文方法学部分撰写工作流
+# 用法: ao run workflows/paper-methods.yaml -i design="被试内设计" -i participants="N=20健康成人" -i acquisition="64ch EEG 500Hz" -i preprocessing="0.1-40Hz滤波 ICA去伪影" -i analysis="CSP+SVM分类" -i stats="t检验+交叉验证"
+
+name: "论文方法学部分撰写"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 1
+inputs:
+  - name: design
+    required: true
+    description: "实验设计（被试内/被试间/混合），一句话描述"
+  - name: participants
+    required: true
+    description: "被试信息：人数、性别、年龄、入排标准"
+  - name: acquisition
+    required: true
+    description: "数据采集：设备型号、通道数、采样率、参考方式"
+  - name: preprocessing
+    required: true
+    description: "预处理流程：滤波、ICA、分段、基线校正等"
+  - name: analysis
+    required: true
+    description: "分析方法：特征提取+分类/回归模型"
+  - name: stats
+    required: true
+    description: "统计方法：检验类型、多重比较校正、效应量"
+  - name: target_journal
+    required: false
+    default: "NeuroImage"
+
+steps:
+  - id: structure_participants
+    role: "neuroscience-paper-writer"
+    skill: "paper-writing"
+    task: |
+      根据以下信息撰写 Participants 小节：
+      
+      被试信息：{{participants}}
+      
+      要求：
+      - 被试人数、性别比例、年龄（Mean±SD, range）
+      - 入排标准（具体而非笼统）
+      - 是否报酬/知情同意/伦理审批
+      - 如有临床信息需包含（诊断、病程、量表分数）
+      
+      目标期刊：{{target_journal}}
+      
+      参考 paper-writing 方法论中 Methods 的写作惯例。
+    output: section_participants
+
+  - id: structure_design
+    role: "neuroscience-paper-writer"
+    skill: "paper-writing"
+    task: |
+      根据以下信息撰写 Experimental Design / Task 小节：
+      
+      实验设计：{{design}}
+      
+      要求：
+      - 实验范式描述（条件数、试次数、刺激参数、时间线）
+      - 被试任务（明确指令）
+      - 如有多条件：说明随机化/平衡方式
+      - 实验时长（含休息）
+      
+      目标期刊：{{target_journal}}
+    output: section_design
+    depends_on: [structure_participants]
+
+  - id: structure_acquisition
+    role: "eeg-preprocessor"
+    task: |
+      根据以下信息撰写 Data Acquisition 小节：
+      
+      采集参数：{{acquisition}}
+      
+      要求：
+      - 设备制造商和型号
+      - 电极/传感器数量和排布
+      - 采样率
+      - 在线滤波和参考方式
+      - 阻抗标准
+      
+      使用标准的神经科学报告格式。
+    output: section_acquisition
+    depends_on: [structure_participants]
+
+  - id: structure_preprocessing
+    role: "eeg-preprocessor"
+    task: |
+      根据以下信息撰写 Preprocessing 小节：
+      
+      预处理：{{preprocessing}}
+      
+      要求：
+      - 按处理顺序逐步骤描述
+      - 每个步骤报告具体参数
+      - ICA：报告剔除成分数和标准
+      - 分段：epoch 时长、基线间隔
+      - 拒绝标准：阈值（µV）和拒绝率
+      - 使用的软件和版本号
+      
+      确保可以复现。
+    output: section_preprocessing
+    depends_on: [structure_acquisition]
+
+  - id: structure_analysis
+    role: "meg-analyst"
+    task: |
+      根据以下信息撰写 Analysis 小节：
+      
+      分析方法：{{analysis}}
+      
+      要求：
+      - 特征：提取方法、参数、维度
+      - 分类/回归：模型、超参数、训练/测试划分
+      - 性能指标：accuracy/ITR/precision 等
+      - 交叉验证策略
+    output: section_analysis
+    depends_on: [structure_preprocessing]
+
+  - id: structure_stats
+    role: "stats-methodologist"
+    task: |
+      根据以下信息撰写 Statistical Analysis 小节：
+      
+      统计方法：{{stats}}
+      
+      要求：
+      - 检验类型和理由
+      - 效应量指标（Cohen's d, η² 等）
+      - 多重比较校正方法
+      - 显著性阈值
+      - 软件（SPSS/R/Python scipy 版本）
+    output: section_stats
+    depends_on: [structure_analysis]
+
+  - id: assemble_methods
+    role: "neuroscience-paper-writer"
+    skill: "paper-build"
+    task: |
+      综合所有小节，组装完整的 Methods 章节：
+      
+      ## Participants
+      {{section_participants}}
+      
+      ## Experimental Design
+      {{section_design}}
+      
+      ## Data Acquisition
+      {{section_acquisition}}
+      
+      ## Preprocessing
+      {{section_preprocessing}}
+      
+      ## Analysis
+      {{section_analysis}}
+      
+      ## Statistical Analysis
+      {{section_stats}}
+      
+      要求：
+      - 统一格式和术语（按 {{target_journal}} 风格）
+      - 检查各小节之间的数据一致性
+      - 确保可复现性：所有参数都已报告
+      - 目标期刊：{{target_journal}}
+      
+      输出完整的 Methods 章节（Markdown）。
+    output_file: "methods_draft.md"
+    depends_on: [structure_participants, structure_design, structure_acquisition, structure_preprocessing, structure_analysis, structure_stats]

@@ -1,0 +1,92 @@
+# MEG 数据预处理规划工作流
+# 用法: ao run workflows/meg-preprocessing.yaml -i file_path=@data.fif
+
+name: "MEG 数据预处理方案"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 120000
+
+concurrency: 1
+inputs:
+  - name: file_path
+    required: true
+    description: "MEG .fif 文件路径"
+  - name: task_type
+    required: false
+    description: "任务类型（resting / task / evoked），如不确定则留空"
+  - name: output_dir
+    required: false
+    default: "./output"
+
+steps:
+  - id: check_data
+    role: "meg-analyst"
+    task: |
+      检查 MEG 数据文件 {{file_path}}。
+
+      请评估以下内容（只评估，不执行代码）：
+      1. 数据基本信息（采样率、通道类型和数量、记录时长）
+      2. 是否存在明显伪影（目视检查 PSD 特征）
+      3. 数据质量初步判断（好/一般/需注意）
+      4. 识别可能的坏通道
+
+      任务类型：{{task_type}}
+
+      输出一份数据质量评估报告。
+    output: data_report
+
+  - id: recommend_preprocessing
+    role: "meg-analyst"
+    task: |
+      基于数据质量评估报告：
+
+      {{data_report}}
+
+      推荐 MEG 预处理方案：
+      1. 滤波策略（高通/低通截止频率、陷波频率，并说明理由）
+      2. ICA 策略（建议成分数、伪影识别方法）
+      3. 是否需要 Maxwell 滤波（如果数据支持）
+      4. 分段（epoch）策略和基线校正参数
+      5. 推荐的处理顺序（Pipeline 流程图）
+
+      输出一份完整的预处理方案，含每个步骤的参数和理由。
+    output: preprocessing_plan
+    depends_on: [check_data]
+
+  - id: code_framework
+    role: "code-reviewer-python"
+    task: |
+      基于预处理方案生成 MNE-Python 代码框架：
+
+      {{preprocessing_plan}}
+
+      要求：
+      1. 完整的可执行 Python 脚本
+      2. 每个步骤有注释说明参数含义
+      3. 包含质量检查的绘图代码（PSD 对比、预处理前后对比）
+      4. 使用 pathlib 处理跨平台路径
+      5. 包含 mne.Report 生成 HTML 预处理报告
+
+      输出完整的 Python 代码。
+    output_file: "{{output_dir}}/meg_preprocessing.py"
+    depends_on: [recommend_preprocessing]
+
+  - id: summary
+    role: "meg-analyst"
+    task: |
+      汇总 MEG 预处理方案：
+
+      ## 数据质量评估
+      {{data_report}}
+
+      ## 预处理方案
+      {{preprocessing_plan}}
+
+      ## 代码实现
+      代码已保存至 {{output_dir}}/meg_preprocessing.py
+
+      输出一份结构化的总结，方便课题组同学直接执行。
+    depends_on: [check_data, recommend_preprocessing, code_framework]

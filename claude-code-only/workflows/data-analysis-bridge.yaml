@@ -1,0 +1,80 @@
+# MEG/EEG 数据实际读取与分析（AO规划 + Claude Code执行）
+# 用法: ao run workflows/data-analysis-bridge.yaml -i file_path=@subject_01_raw.fif
+
+name: "MEG/EEG 数据实际读取与分析"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 600000
+
+concurrency: 1
+inputs:
+  - name: file_path
+    required: true
+    description: "MEG/EEG 数据文件路径（.fif .set .edf .bdf .vhdr）"
+  - name: analysis_goal
+    required: false
+    default: "全面质量评估"
+    description: "分析目标（如 数据质量评估 / 预处理建议 / 特征探索）"
+
+steps:
+  - id: read_metadata
+    role: "eeg-preprocessor"
+    task: |
+      ## Claude Code 读取实际数据文件
+
+      你需要用 Python (MNE) 读取这个文件并提取所有元数据：
+      文件路径：{{file_path}}
+
+      ```python
+      import mne
+      raw = mne.io.read_raw('{{file_path}}', preload=False)
+      print(f"采样率: {raw.info['sfreq']} Hz")
+      print(f"通道数: {len(raw.ch_names)}")
+      print(f"通道类型: {set(raw.get_channel_types())}")
+      print(f"时长: {raw.times[-1]:.1f} s")
+      print(f"事件/注释: {'有' if len(raw.annotations) > 0 else '无'}")
+      print(f"滤波: {raw.info.get('highpass', 'N/A')} - {raw.info.get('lowpass', 'N/A')} Hz")
+      print(f"前30个通道名: {raw.ch_names[:30]}")
+      ```
+      
+      请在终端运行以上代码，把全部输出粘贴回来。
+
+      分析目标：{{analysis_goal}}
+    llm:
+      provider: "claude-code"
+      model: "claude-sonnet-4-5"
+      timeout: 300000
+    output: raw_metadata
+
+  - id: analyze_quality
+    role: "eeg-preprocessor"
+    task: |
+      基于从真实文件读取的元数据，评估数据质量：
+
+      {{raw_metadata}}
+
+      1. 数据完整性（采样率、通道数、时长是否正常）
+      2. 通道类型分布（EEG/MEG/EOG/EMG/STIM）
+      3. 潜在问题（无事件标记/缺滤波参数）
+      4. 分析目标「{{analysis_goal}}」的可行性
+    output: quality_report
+    depends_on: [read_metadata]
+
+  - id: recommend_plan
+    role: "eeg-preprocessor"
+    skill: "eeg-artifact-removal"
+    task: |
+      根据真实数据的质量评估，制定处理方案：
+
+      {{quality_report}}
+
+      1. 针对具体通道配置推荐预处理参数
+      2. 针对分析目标「{{analysis_goal}}」推荐分析方法
+      3. 给出可直接运行的 MNE-Python 代码框架（用到真实文件路径 {{file_path}}）
+
+      参考 eeg-artifact-removal 方法论。
+    output_file: "analysis_plan_for_real_data.md"
+    depends_on: [analyze_quality]

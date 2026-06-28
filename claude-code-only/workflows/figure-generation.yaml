@@ -1,0 +1,106 @@
+# 科研图表生成工作流（三步法）
+# 用法: ao run workflows/figure-generation.yaml -i data_desc="ERP成分P300在Cz电极:条件A(5.2±1.1µV) vs 条件B(3.1±0.9µV)" -i figure_type="ERP波形对比" -i journal_style="NeuroImage"
+
+name: "科研图表生成（三步法：分析→选图→绘图）"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 1
+inputs:
+  - name: data_desc
+    required: true
+    description: "数据描述（统计结果、数值、效应方向等）"
+  - name: figure_type
+    required: false
+    description: "图表类型（ERP波形/时频图/地形图/连接图/统计对比/流程图），留空则AI推荐"
+  - name: journal_style
+    required: false
+    default: "NeuroImage"
+  - name: format
+    required: false
+    default: "SVG"
+    description: "输出格式：SVG/PDF/TIFF"
+
+steps:
+  - id: analyze_data
+    role: "stats-methodologist"
+    skill: "statistical-analysis"
+    task: |
+      ## 第1步：数据分析
+
+      分析以下数据，提取可视化关键点：
+
+      {{data_desc}}
+
+      1. 数据类型识别（时域/频域/空间/统计）
+      2. 关键对比维度（条件间/时间点/频段/电极）
+      3. 效应量和显著性标注建议
+      4. 推荐 2-3 种可视化方式的优劣对比
+
+      参考 statistical-analysis 方法论。
+    output: data_analysis
+
+  - id: select_visualization
+    role: "figure-designer"
+    task: |
+      ## 第2步：选择可视化方案
+
+      基于数据分析结果：
+      {{data_analysis}}
+
+      指定的图表类型：{{figure_type}}（留空表示由你推荐）
+
+      从科研图表最佳实践中选择最合适的可视化方案：
+      1. 推荐图表组合（如 butterfly plot + topomap + 差异波）
+      2. 配色方案（色盲友好优先）
+      3. 标注建议（显著性/效应量/误差条）
+      4. 排版（单列/双列，尺寸）
+
+      目标期刊：{{journal_style}}
+    output: vis_plan
+    depends_on: [analyze_data]
+
+  - id: generate_figure
+    role: "figure-designer"
+    skill: "nature-figure"
+    task: |
+      ## 第3步：生成图表代码
+
+      根据可视化方案生成 MNE/matplotlib 代码：
+
+      {{vis_plan}}
+
+      要求：
+      - 参考 nature-figure 的期刊标准
+      - 输出格式：{{format}}
+      - 包含完整的配色和字体设置
+      - 标注统计显著性
+      - 生成独立的图表文件
+
+      目标期刊：{{journal_style}}
+    output_file: "figure_{{figure_type}}.py"
+    depends_on: [select_visualization]
+
+  - id: summary
+    role: "figure-designer"
+    task: |
+      汇总图表生成方案：
+
+      ## 数据分析
+      {{data_analysis}}
+
+      ## 可视化方案
+      {{vis_plan}}
+
+      ## 代码
+      已生成：figure_{{figure_type}}.py
+
+      ### 使用方式
+      ```bash
+      python figure_{{figure_type}}.py
+      ```
+    depends_on: [analyze_data, select_visualization, generate_figure]

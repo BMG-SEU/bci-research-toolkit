@@ -1,0 +1,148 @@
+# EEG 数据分析工作流
+# 用法: ao run workflows/eeg-analysis.yaml -i file_path=@data.set -i analysis_type="time-frequency"
+
+name: "EEG 数据分析流水线"
+agents_dir: "./agents"
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"
+  timeout: 180000
+
+concurrency: 1
+inputs:
+  - name: file_path
+    required: true
+    description: "EEG 数据文件路径（支持 .set .edf .bdf .vhdr .fif）"
+  - name: analysis_type
+    required: true
+    description: "分析类型：time-frequency / erp / connectivity / classification"
+  - name: task_info
+    required: false
+    description: "实验任务描述（如 '左右手运动想象，2 类，每类 100 试次'）"
+
+steps:
+  - id: data_check
+    role: "eeg-preprocessor"
+    task: |
+      检查 EEG 数据文件 {{file_path}}：
+      1. 基本信息（采样率、通道数、记录时长）
+      2. 通道类型（识别 EOG/EMG 通道）
+      3. 是否有事件标记
+      4. 初始数据质量评估
+
+      任务信息：{{task_info}}
+    output: data_report
+
+  - id: artifact_strategy
+    role: "eeg-preprocessor"
+    skill: "eeg-artifact-removal"
+    task: |
+      根据数据评估报告，规划去伪影策略：
+
+      {{data_report}}
+
+      1. 识别主要伪影类型
+      2. 推荐去伪影方法（ICA/Autoreject/SSP）
+      3. 给出具体参数建议
+      4. 说明理由
+
+      参考 eeg-artifact-removal 方法论。
+    output: artifact_plan
+    depends_on: [data_check]
+
+  - id: preprocessing_pipeline
+    role: "eeg-preprocessor"
+    task: |
+      根据数据报告和伪影策略，规划完整预处理流程：
+
+      数据报告：{{data_report}}
+      伪影策略：{{artifact_plan}}
+
+      1. 滤波方案（高通/低通/陷波）
+      2. 重参考方案
+      3. 分段（epoch）策略
+      4. 基线校正参数
+
+      按处理顺序输出 Pipeline。
+    output: preprocessing_plan
+    depends_on: [artifact_strategy]
+
+  - id: analysis_design
+    role: "meg-analyst"
+    task: |
+      根据分析类型设计分析方法：
+
+      分析类型：{{analysis_type}}
+      预处理方案：{{preprocessing_plan}}
+
+      对于每种分析类型：
+      - time-frequency：设计时频参数（参考 time-frequency-analysis skill）
+      - erp：定义 ERP 成分和时间窗
+      - connectivity：选择连接指标（PLV/PLI/coherence）
+      - classification：设计特征提取+分类流程
+    output: analysis_plan
+    depends_on: [preprocessing_pipeline]
+
+  - id: stats_design
+    role: "stats-methodologist"
+    skill: "statistical-analysis"
+    task: |
+      根据分析设计规划统计方法：
+
+      分析方案：{{analysis_plan}}
+      实验设计信息：{{task_info}}
+
+      1. 推荐统计检验方法
+      2. 多重比较校正方案
+      3. 效应量指标
+
+      参考 statistical-analysis 方法论。
+    output: stats_plan
+    depends_on: [analysis_design]
+
+  - id: code_template
+    role: "code-reviewer-python"
+    task: |
+      根据完整的分析方案生成 MNE-Python 代码：
+
+      ## 预处理
+      {{preprocessing_plan}}
+
+      ## 分析
+      {{analysis_plan}}
+
+      ## 统计
+      {{stats_plan}}
+
+      要求：
+      - 完整可执行
+      - 每步骤有注释
+      - 包含质量检查绘图
+      - 关键参数有说明
+    output_file: "eeg_analysis_{{analysis_type}}.py"
+    depends_on: [preprocessing_pipeline, analysis_design, stats_design]
+
+  - id: summary
+    role: "eeg-preprocessor"
+    task: |
+      汇总完整的 EEG 分析方案：
+
+      ## 数据质量
+      {{data_report}}
+
+      ## 去伪影方案
+      {{artifact_plan}}
+
+      ## 预处理流程
+      {{preprocessing_plan}}
+
+      ## 分析方法
+      {{analysis_plan}}
+
+      ## 统计方法
+      {{stats_plan}}
+
+      产出结构化报告，方便直接执行。
+    output_file: "analysis_report.md"
+    depends_on: [data_check, artifact_strategy, preprocessing_pipeline, analysis_design, stats_design, code_template]

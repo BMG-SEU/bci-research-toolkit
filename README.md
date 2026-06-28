@@ -5,12 +5,13 @@
 
 ## 🚀 快速开始
 
+### 方式一：一键安装（仅需 Claude Code）
 ```bash
-# 1. 下载 → 解压到桌面
-# 2. 双击 setup.bat（Win）或 bash setup.sh（Mac）
-# 3. 编辑 .env 填入 DeepSeek API key
-# 4. 输入 ao web → 浏览器打开 → 选模板 → 填参数 → 点运行
+curl -fsSL https://raw.githubusercontent.com/BMG-SEU/bci-research-toolkit/main/install-claude-skills.sh | bash
 ```
+> 自动安装 24 个科研 Skill + 11 工作流 + 7 Agent → 直接用 Claude Code 对话
+
+### 方式二：完整部署（AO + Claude Code + WebUI）
 
 > 📖 **完整教程**：[docs/tutorial.md](docs/tutorial.md)（小白版，每步都写了）  
 > 📋 **项目任务书**：[docs/PROJECT_PROPOSAL.md](docs/PROJECT_PROPOSAL.md)  

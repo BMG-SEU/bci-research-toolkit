@@ -64,39 +64,40 @@
 
 ---
 
-## 第 3 步：下载工具包（三选一）
+## 第 3 步：下载工具包（四选一）
 
-### 方式 A：有 GitHub 账号（推荐）
+### 方式 A：一键安装 Skill 包（最快，仅需 Claude Code）
+
+打开 cmd（Win）或 Terminal（Mac），输入这一行：
+
+```
+curl -fsSL https://raw.githubusercontent.com/BMG-SEU/bci-research-toolkit/main/install-claude-skills.sh | bash
+```
+
+等它跑完（约 30 秒），直接在 Claude Code 里对话就能用。
+**不需要装 AO、不需要 Node.js。**
+
+### 方式 B：下载完整版 ZIP
 
 1. 打开 https://github.com/BMG-SEU/bci-research-toolkit
-2. 点绿色的 **Code** 按钮
-3. 选 **Download ZIP**
-4. 下载完解压到桌面
+2. 点绿色的 **Code** 按钮 → **Download ZIP**
+3. 下载完解压到桌面
+4. 双击 `setup.bat`（Win）或 `bash setup.sh`（Mac）
 
-### 方式 B：用 Git 命令
-
-打开 cmd（Win）或 Terminal（Mac），输入：
+### 方式 C：用 Git 命令
 
 ```
 git clone https://github.com/BMG-SEU/bci-research-toolkit.git
+cd bci-research-toolkit
+bash setup.sh
 ```
 
-> 如果没有 Git：https://git-scm.com 下载安装，一路下一步。
+### 方式 D：Docker
 
-### 方式 C：Docker（无需装 Node.js，环境隔离）
-
-如果你会 Docker 或者想用服务器部署：
-
-1. 确保电脑已装 Docker Desktop（https://docker.com）
-2. 解压后编辑 `.env` 填入 API key
-3. 打开 cmd/Terminal，进入文件夹
-4. 输入：
-   ```
-   docker compose up -d
-   ```
-5. 浏览器打开 `http://localhost:3000`
-
-> Docker 的好处：不用装 Node.js、环境隔离、可以在服务器上跑。
+```
+docker compose up -d
+```
+浏览器打开 `http://localhost:3000`
 
 ---
 

@@ -3,15 +3,18 @@
 > 一套为脑机接口与脑磁/脑电信号研究打造的 AI 智能体工具包  
 > **23 Skills · 7 Agent · 11 Workflow · 89+ 提示词 · 小白也能用**
 
-## 🚀 快速开始
+## 🚀 快速开始（两种方式任选）
 
-### 方式一：一键安装（仅需 Claude Code）
+### 方式 A：纯 Skill 包（仅需 Claude Code）
 ```bash
 curl -fsSL https://raw.githubusercontent.com/BMG-SEU/bci-research-toolkit/main/install-claude-skills.sh | bash
 ```
-> 自动安装 24 个科研 Skill + 11 工作流 + 7 Agent → 直接用 Claude Code 对话
+> 自动安装 24 个科研 Skill + 11 工作流 + 7 Agent → 直接在 Claude Code 对话使用
 
-### 方式二：完整部署（AO + Claude Code + WebUI）
+### 方式 B：完整版（含 AO 多 Agent 编排 + WebUI + Docker）
+```bash
+# 1. 下载 ZIP 或 git clone → 2. 双击 setup.bat / bash setup.sh
+# 3. 编辑 .env 填入 API key → 4. ao web 浏览器打开
 
 > 📖 **完整教程**：[docs/tutorial.md](docs/tutorial.md)（小白版，每步都写了）  
 > 📋 **项目任务书**：[docs/PROJECT_PROPOSAL.md](docs/PROJECT_PROPOSAL.md)  

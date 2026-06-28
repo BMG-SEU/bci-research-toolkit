@@ -151,7 +151,24 @@ AO（项目经理）:                   Claude Code（程序员）:
 
 ---
 
-## 六、优势总结
+## 六、两种交付方式
+
+| | 版本 A：纯 Skill 包 | 版本 B：完整版 |
+|------|:---:|:---:|
+| 安装命令 | `curl ... \| bash` | `git clone + bash setup.sh` |
+| 需要 AO？ | ❌ | ✅ |
+| 需要 Node.js？ | ❌ | ✅ |
+| 多角色自动并行 | ❌ | ✅ |
+| YAML 工作流 | ✅ (文本参考) | ✅ (AO 自动编排) |
+| Web 界面 | ❌ | ✅ |
+| 23 个 Skills | ✅ | ✅ |
+| 适合 | 已有 Claude Code | 全组部署 |
+
+> 一行安装 Skill 包：`curl -fsSL https://raw.githubusercontent.com/BMG-SEU/bci-research-toolkit/main/install-claude-skills.sh | bash`
+
+---
+
+## 七、典型使用流程
 
 | 优势 | 说明 |
 |------|------|
